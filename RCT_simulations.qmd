@@ -223,7 +223,8 @@ plot_df1 <- data.frame(
     var_within = sapply(simres1, function(x) mean(x$var_within))
     )
 
-# Find the critical value for the ratio F for n observations and for significance level 0.05
+# Find the critical value for the ratio F for n observations
+# and for significance level 0.05
 alpha <- 0.05  # Significance level
 df1 <- 1  # Between-group degrees of freedom
 df2 <- n-2  # Within-group degrees of freedom
@@ -326,7 +327,8 @@ fig2_panel3 <- ggplot(data = plot_df3, aes(x = p)) +
           aes(y = var_between, colour = "between groups"), 
           size = pointsize
           ) +
-        geom_point(aes(y = var_within, colour = "within groups"), size = pointsize/1.5) +
+        geom_point(aes(y = var_within, colour = "within groups"),
+                   size = pointsize/1.5) +
         scale_colour_manual(
             name = "Variance",
             values = c(
