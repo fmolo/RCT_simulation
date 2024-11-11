@@ -3,7 +3,6 @@ title: "Example ANOVA in Scholl and Molo (2024)"
 author: "Fabio Molo"
 number-sections: false
 highlight-style: pygments
-bibliography: Scholl-Molo.bib
 format: 
   html: 
     code-fold: true
@@ -37,10 +36,16 @@ confounder_sd <- 0.5 # standard deviation of potential confounding variables
 Function to generate confounders:
 ```{r}
 #| label: confounder_function
-# function to simulate n observations of p confounding variables from a given distribution function
+# function to simulate n observations of p confounding variables 
+# from a given distribution function
 generate_confounders <- function(n, p, distr = "rnorm", ...) {
     res <- sapply(1:p, FUN = function(x) {
-        do.call(distr, args = list(n = n, mean = confounder_mean, sd = confounder_sd, ...))
+        do.call(distr, args = list(
+          n = n,
+          mean = confounder_mean,
+          sd = confounder_sd, 
+          ...)
+          )
         })
 }
 ```
@@ -73,7 +78,8 @@ generate_anovas <- function(n, p, te, coef_size, distr) {
     # conduct analysis of variance
     fit <- anova(fit_lm)
 
-    # get differences in means between groups (may be used for non-binary confounders)
+    # get differences in means between groups 
+    # (may be used for non-binary confounders)
     mean_diff <- apply(
         X, 2, function(x) {
             mean(x[which(treat == 1)]) - mean(x[which(treat == 0)])
@@ -118,10 +124,17 @@ for (i in 1:n_simul) {
     seeds[[i]] <- attr(anova_sim, "seed")
 }
 
-# retrieve the 75%-quantile case be choosing the seed that corresponds to the median sum of mean differences
+# retrieve the 75%-quantile case be choosing the seed that 
+# corresponds to the median sum of mean differences
 seed_index <- which(sum_mean_diff == quantile(sum_mean_diff, 0.75))
 .Random.seed <- seeds[[seed_index]]
-example_anova <- generate_anovas(n = n, p = p, te = te, coef_size = coef_size, distr = distr)
+example_anova <- generate_anovas(
+  n = n,
+  p = p,
+  te = te,
+  coef_size = coef_size,
+  distr = distr
+  )
 
 ```
 
