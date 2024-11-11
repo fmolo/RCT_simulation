@@ -47,3 +47,11 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# other
+sokal_biometry_1995.pdf
+shiny_app.R
+simres*.rds
+example_anova_files/
+*.fls
+*.fdb_latexmk
