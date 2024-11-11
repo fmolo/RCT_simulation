@@ -3,7 +3,6 @@ title: "Companion to simulations in Scholl and Molo (2024)"
 author: "Fabio Molo, Raphael Scholl"
 number-sections: false
 highlight-style: pygments
-bibliography: Scholl-Molo.bib
 format: 
   html: 
     code-fold: true
@@ -17,7 +16,7 @@ editor_options:
 ---
 ## Introduction 
 
-This notebook describes and runs the simulations in Section 5.3 of [cite preprint] (discussing @Worrall:2002aa) using the R statistical programming language.
+This notebook describes and runs the simulations in Section 5.3 of Scholl Molo (2024) using the R statistical programming language.
 
 ## Setup
 
@@ -67,7 +66,8 @@ Having defined these parameters, we can now generate experimental data as follow
 
 ```{r}
 #| label: confounder_function
-# function to simulate n observations of p confounding variables of a given distribution function
+# function to simulate n observations of p confounding variables 
+# of a given distribution function
 generate_confounders <- function(n, p, distr = "rnorm", ...) {
     res <- sapply(1:p, FUN = function(x) {
         do.call(distr, args = list(n = n, ...))
@@ -158,7 +158,7 @@ Then we run the simulation `{r} format(r, scientifc = FALSE)` times for each num
 #| label: simulate
 #| eval: false
 
-RNGkind("L'Ecuyer-CMRG") ## needs to be set for reproducibility in parallel processing
+RNGkind("L'Ecuyer-CMRG") # needs to be set for reproducibility in parallel processing
 set.seed(0)
 
 # using parameters set above
@@ -186,7 +186,8 @@ simres3 <- mclapply(
     mc.cores = 6
 )
 
-# to reproduce the simulations without parallelization (which is probably necessary on Windows):
+# to reproduce the simulations without parallelization
+# (which is probably necessary on Windows):
 # simres <- lapply(
 #     1:p_max, simul, r = r, n = n, te = te, 
 #     coef_size = coef_size, distr = distr
@@ -200,7 +201,7 @@ saveRDS(simres3, "simres_r3.rds")
 
 ```{r}
 #| label: load_simulations
-#| include: true
+#| eval: true
 
 # alternatively we can load the results of previously run simulations from disk 
 # to save time
@@ -233,17 +234,25 @@ pointsize <- 0.8
 
 fig2_panel1 <- ggplot(data = plot_df1, aes(x = p)) + 
         # shaded area in first layer indicates values for var_between where F > Fcrit
-        geom_ribbon(aes(ymin = sig_threshold, ymax = Inf), fill = "grey80", alpha = .5) + 
-        geom_point(aes(y = var_between, colour = "between groups"), size = pointsize) +
-        geom_point(aes(y = var_within, colour = "within groups"), size = pointsize, alpha = 0.8) +
-        #scale_y_continuous(limits = c(0, max(plot_df1$var_between))) +
+        geom_ribbon(
+          aes(ymin = sig_threshold, ymax = Inf), 
+          fill = "grey80", 
+          alpha = .5
+          ) + 
+        geom_point(
+          aes(y = var_between, colour = "between groups"), 
+          size = pointsize
+          ) +
+        geom_point(
+          aes(y = var_within, colour = "within groups"),
+          size = pointsize, 
+          alpha = 0.8
+          ) +
         scale_colour_manual(
             name = "Variance",
             values = c(
                 "between groups" = "#00608b", # blue
                 "within groups" = "#ffa600" # yellow-orange
-                #"between groups"= "#58508D", # purple-blue
-                #"within groups" = "#FF6361" # red
                 )
             ) +
         xlab("Number of potential confounders") +
@@ -272,18 +281,22 @@ plot_df2 <- data.frame(
     )
 
 fig2_panel2 <- ggplot(data = plot_df2, aes(x = p)) + 
-        geom_point(aes(y = var_between, colour = "between groups"), size = pointsize) +
-        geom_point(aes(y = var_within, colour = "within groups"), size = pointsize, alpha = 0.8) +
+        geom_point(
+          aes(y = var_between, colour = "between groups"),
+          size = pointsize
+          ) +
+        geom_point(
+          aes(y = var_within, colour = "within groups"),
+          size = pointsize,
+          alpha = 0.8
+          ) +
         scale_colour_manual(
             name = "Variance",
             values = c(
                 "between groups" = "#00608b", # blue
                 "within groups" = "#ffa600" # yellow-orange
-                #"between groups"= "#58508D", # purple-blue
-                #"within groups" = "#FF6361" # red
                 )
             ) +
-        #scale_y_continuous(limits = c(0, max(plot_df1$var_between)/3)) +
         xlab("Number of potential confounders") +
         ylab("Variance") +
         theme_minimal() +
@@ -309,18 +322,18 @@ plot_df3 <- data.frame(
     )
 
 fig2_panel3 <- ggplot(data = plot_df3, aes(x = p)) + 
-        geom_point(aes(y = var_between, colour = "between groups"), size = pointsize) +
+        geom_point(
+          aes(y = var_between, colour = "between groups"), 
+          size = pointsize
+          ) +
         geom_point(aes(y = var_within, colour = "within groups"), size = pointsize/1.5) +
         scale_colour_manual(
             name = "Variance",
             values = c(
                 "between groups" = "#00608b", # blue
                 "within groups" = "#ffa600" # yellow-orange
-                #"between groups"= "#58508D", # purple-blue
-                #"within groups" = "#FF6361" # red
                 )
             ) +
-        #scale_y_continuous(limits = c(0, max(plot_df1$var_between)/3)) +
         xlab("Number of potential confounders") +
         ylab("Variance") +
         theme_minimal() +
@@ -331,7 +344,6 @@ fig2_panel3 <- ggplot(data = plot_df3, aes(x = p)) +
             panel.grid.minor.y = element_blank(),
             axis.title.y = element_text(size = 10)
             ) 
-        #coord_fixed(ratio = 0.1, ylim = c(0, 2250))
 
 fig2_panel3
 
@@ -345,11 +357,14 @@ fig2_panel3
 # combine the three previously generated graphs in three panels, using ggarrange
 fig2 <- ggarrange(
     fig2_panel1 + rremove("xlab") + rremove("ylab") + scale_y_continuous(
-        limits = c(0, max(plot_df1$var_between)), breaks = seq(from = 0, to = 9000, by = 1000)),
+      limits = c(0, max(plot_df1$var_between)), 
+      breaks = seq(from = 0, to = 9000, by = 1000)),
     fig2_panel2 + rremove("ylab") + rremove("xlab") + scale_y_continuous(
-        limits = c(0, max(plot_df1$var_between)/2.5), breaks = c(0, 1000, 2000)),  
+        limits = c(0, max(plot_df1$var_between)/2.5), 
+        breaks = c(0, 1000, 2000)),  
     fig2_panel3 + rremove("xlab") + rremove("ylab") + scale_y_continuous(
-        limits = c(0, max(plot_df1$var_between)/2.5), breaks = c(0, 1000, 2000)),
+        limits = c(0, max(plot_df1$var_between)/2.5), 
+        breaks = c(0, 1000, 2000)),
     ncol = 1,
     heights = c(1, 1/2.5, 1/2.5),
     common.legend = TRUE,
@@ -364,8 +379,13 @@ fig2 <- ggarrange(
 # add common axis labels
 fig2_annotated <- annotate_figure(
   fig2,
-  left = textGrob("Variance", rot = 90, vjust = .5, hjust=0.1, gp = gpar(cex = 1, fontfamily = "Helvetica")),
-  bottom = textGrob("Number of potential confounders", gp = gpar(cex= 1, fontfamily = "Helvetica"))
+  left = textGrob(
+    "Variance",
+    rot = 90, vjust = .5, hjust=0.1, 
+    gp = gpar(cex = 1, fontfamily = "Helvetica")),
+  bottom = textGrob(
+    "Number of potential confounders", 
+    gp = gpar(cex= 1, fontfamily = "Helvetica"))
   )
 
 fig2_annotated
