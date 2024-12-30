@@ -38,7 +38,7 @@ We begin by defining several parameters for our simulated randomized experiments
 
 ```{r}
 #| label: set_parameters
-n <- 200 # n observations
+n <- 250 # n observations
 p_max <- 1000 # p confounders
 te <- 0 # treatment effect beta_t
 coef_size <- 1 # beta_p (taken as constant for all confounders)
