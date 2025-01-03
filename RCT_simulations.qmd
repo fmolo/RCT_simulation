@@ -4,10 +4,6 @@ author: "Fabio Molo, Raphael Scholl"
 number-sections: false
 highlight-style: pygments
 format: 
-  html: 
-    code-fold: true
-    html-math-method: katex
-    toc: true
   pdf: 
     papersize: a4
     toc: false
@@ -39,14 +35,14 @@ We begin by defining several parameters for our simulated randomized experiments
 ```{r}
 #| label: set_parameters
 n <- 300 # n observations
-p_max <- 1000 # p confounders
+p_max <- 1000 # p potential confounders
 te <- 0 # treatment effect beta_t
 coef_size <- 1 # beta_p (taken as constant for all confounders)
 r <- c(1, 10, 10000) # number of simulations
 distr <- "rnorm" # for standard-normally distributed confounders
 ```
 
-- We define the number of observations $n$. In a randomized clinical trial, this would correspond to the total number of patients in the trial. We choose $n$ = `{r} n` for all trials. (This roughly corresponds to the median number of enrolled participants of all Phase 3 randomized trials finished in 2023 registered on clinicaltrials.gov, which is 190.) Since we consider trials with two groups of equal sizes, this will simulate a trial in which the control and intervention groups each have 100 participants.
+- We define the number of observations $n$. In a randomized clinical trial, this would correspond to the total number of patients in the trial. We choose $n$ = `{r} n` for all trials. (This roughly corresponds to the median number of enrolled participants of all Phase 3 randomized trials finished between 2004 and 2024, which is 302, as calculated in `get_clinicaltrials_gov_data.R`) Since we consider trials with two groups of equal sizes, this will simulate a trial in which the control and intervention groups each have 150 participants.
 
 - We define the number of potential confounders $p$ that are active in the system. We will run simulations starting at $p = 1$ and then increasing $p$ gradually by 1 to a maximum of $p_{max}$ = `{r} p_max`. 
 
@@ -89,7 +85,7 @@ Three notes on this setup:
 
 - The effect of the potential confounders on the outcome are linear additive. We do not consider interactions between confounders or between confounders and the treatment. Also, the confounders are mutually independent, as are the observations $i$.
 
-- Sampling the sum of $p$ normally distributed variables is equivalent to sampling from one normally distributed variable with mean and variance equal to the sums of means and variances of the individual variables. To stay close to the setup that @Worrall:2002aa is concerned about we still sample each confounder individually.
+- Sampling the sum of $p$ normally distributed variables is equivalent to sampling from one normally distributed variable with mean and variance equal to the sums of means and variances of the individual variables. To stay close to the setup that @Worrall:2002aa is concerned about, and to allow for easy adaptation to non-normally distributed variables, we still sample each confounder individually.
 
 ## Conduct an analysis of variance for the treatment
 
@@ -156,7 +152,7 @@ Then we run the simulation for each number of potential confounders $p$. We do t
 
 ```{r}
 #| label: simulate
-#| eval: false
+#| eval: true
 
 RNGkind("L'Ecuyer-CMRG") # needs to be set for reproducibility in parallel processing
 set.seed(2025)
@@ -270,7 +266,8 @@ fig2_panel1
 
 ```
 
-The maximum value of the variance between groups happens to occur at $p =$ `{r} which.max(plot_df1$var_between)}`.
+
+The maximum value of the variance between groups happens to occur at $p =$ `{r} which.max(plot_df1$var_between)`.
 
 ```{r}
 #| label: fig-figure2-panel2
@@ -355,6 +352,7 @@ fig2_panel3
 ## Combined Figure 2
 
 ```{r}
+#| label: fig-figure2-combined
 
 # combine the three previously generated graphs in three panels, using ggarrange
 fig2 <- ggarrange(
