@@ -21,7 +21,7 @@ data <- data[data$rec_status == "Completed", ]
 data <- data[!is.na(data$enrollment), ]
 
 # get the total number of studies
-nrow(data) 
+nrow(data) # 13890
 
 # get the median number of participants
-median(data$enrollment) 
+median(data$enrollment) # 302
