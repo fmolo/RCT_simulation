@@ -38,7 +38,7 @@ We begin by defining several parameters for our simulated randomized experiments
 
 ```{r}
 #| label: set_parameters
-n <- 250 # n observations
+n <- 300 # n observations
 p_max <- 1000 # p confounders
 te <- 0 # treatment effect beta_t
 coef_size <- 1 # beta_p (taken as constant for all confounders)
@@ -54,7 +54,7 @@ distr <- "rnorm" # for standard-normally distributed confounders
 
 - We define the effect size of the confounders. For simplicity, we set the same effect size $\beta$ = `{r} coef_size` for all confounders: $\beta_1 = \beta_2 = \ldots = \beta_p = \beta$. 
 
-- We define the number of times $r$ the simulation is run for each number of confounders. We perform the simulation three times: first with $r$ = `{r} format(r[1], scientific = FALSE)` to stay close to the scenario outlined by Worrall. Ten we show results for a moderate number of repetitions ($r$ = `{r} format(r[2], scientific = FALSE)`), and last we choose a high number of $r$ = `{r} format(r[3], scientific = FALSE)` to obtain estimates with negligible Monte Carlo error.
+- We define the number of times $r$ the simulation is run for each number of confounders. We perform the simulation three times: first with $r$ = `{r} format(r[1], scientific = FALSE)` to stay close to the scenario outlined by Worrall. Then we show results for a moderate number of repetitions ($r$ = `{r} format(r[2], scientific = FALSE)`), and last we choose a high number of $r$ = `{r} format(r[3], scientific = FALSE)` to obtain estimates with negligible Monte Carlo error.
 
 - We also need to define the distribution of the simulated confounders, that is, the distribution that the simulated values for the individual observations $i$ are randomly sampled from. We only consider the simplest cases where all confounders are standard normally distributed (i.e. normally distributed with a mean of 0 and a standard deviation of 1).
 
@@ -152,14 +152,14 @@ simul <- function(p, r, n, te, coef_size, distr) {
 
 ## Run the simulation
 
-Then we run the simulation `{r} format(r, scientifc = FALSE)` times for each number of potential confounders $p$. We set a 'seed' to be able to always reproduce the same pseudorandom data. The results of all simulations are stored in a list and saved on disk. 
+Then we run the simulation for each number of potential confounders $p$. We do this three times, once for each number of repetitions. We first set a 'seed' to be able to always reproduce the same pseudorandom data. The results of all simulations are stored in a list and saved on disk. 
 
 ```{r}
 #| label: simulate
 #| eval: false
 
 RNGkind("L'Ecuyer-CMRG") # needs to be set for reproducibility in parallel processing
-set.seed(0)
+set.seed(2025)
 
 # using parameters set above
 # three times for three different specified numbers of simulations r
@@ -196,7 +196,6 @@ simres3 <- mclapply(
 saveRDS(simres1, "simres_r1.rds")
 saveRDS(simres2, "simres_r2.rds")
 saveRDS(simres3, "simres_r3.rds")
-
 ```
 
 ```{r}
@@ -266,11 +265,12 @@ fig2_panel1 <- ggplot(data = plot_df1, aes(x = p)) +
             panel.grid.minor.y = element_blank(),
             axis.title.y = element_text(size = 10)
             ) 
-        #coord_fixed(ratio = 0.025, ylim = c(0, 9000))
 
 fig2_panel1
 
 ```
+
+The maximum value of the variance between groups happens to occur at $p =$ `{r} which.max(plot_df1$var_between)}`.
 
 ```{r}
 #| label: fig-figure2-panel2
